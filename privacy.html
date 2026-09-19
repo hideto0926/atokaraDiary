@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>プライバシーポリシー / Privacy Policy — あとから旅日記</title>
+<link rel="icon" href="assets/icon.png" />
+<style>
+  :root{--ground:#F5F1EA;--card:#FFFFFF;--ink:#1E1B17;--secondary:#5E574D;--muted:#8E8578;--hairline:#E2DBCF;--segment:#E6DFD3;--accent:#1F4E5F}
+  body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;background:var(--ground);color:var(--ink);line-height:1.85}
+  .page{max-width:760px;margin:0 auto;padding:28px 16px 56px}
+  .card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(30,27,23,.08)}
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .home{display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:700}
+  .home img{width:30px;height:30px;border-radius:8px}
+  .spacer{flex:1}
+  .langtoggle{display:flex;background:var(--segment);border-radius:10px;padding:3px}
+  .langtoggle button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:700;color:var(--secondary);padding:5px 11px;border-radius:8px;cursor:pointer;min-height:32px}
+  .langtoggle button.active{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(30,27,23,.12)}
+  h1{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:27px;margin:8px 0 4px}
+  h2{font-size:18px;margin-top:32px;border-bottom:1px solid var(--hairline);padding-bottom:6px}
+  p,li{font-size:15px;color:#3a352e}
+  li{margin:6px 0}
+  .updated{color:var(--muted);font-size:13px;margin-bottom:26px}
+  a{color:var(--accent)}
+  .lang-ja{display:none}
+  body.ja .lang-en{display:none}
+  body.ja .lang-ja{display:initial}
+  @media(max-width:520px){.card{padding:22px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="card">
+  <div class="top">
+    <a class="home" href="index.html"><img src="assets/icon.png" alt="" /><span class="lang-ja">← あとから旅日記</span><span class="lang-en">← Atokara Travel Diary</span></a>
+    <div class="spacer"></div>
+    <div class="langtoggle" role="group" aria-label="Language">
+      <button id="btn-en" type="button" onclick="setLang('en')">EN</button>
+      <button id="btn-ja" type="button" onclick="setLang('ja')">日本語</button>
+    </div>
+  </div>
+
+  <h1><span class="lang-ja">プライバシーポリシー</span><span class="lang-en">Privacy Policy</span></h1>
+  <p class="updated"><span class="lang-ja">最終更新日：2026年9月19日</span><span class="lang-en">Last updated: September 19, 2026</span></p>
+
+  <p>
+    <span class="lang-ja">あとから旅日記（以下「本アプリ」）は、秋吉秀信（以下「開発者」）が提供するiOSアプリです。本ポリシーでは、本アプリが情報をどのように取り扱うかを説明します。要点として、本アプリは写真ライブラリを参照して表示するだけで、写真をアプリ内に保存したり、外部に送信したりしません。開発者がユーザーの情報を受け取ることはありません。</span>
+    <span class="lang-en">Atokara Travel Diary (the “App”) is an iOS app provided by Hideto Akiyoshi (the “Developer”). This policy explains how the App handles your information. In short: the App only reads your photo library to display it — it never copies your photos into the App or uploads them, and the Developer never receives your information.</span>
+  </p>
+
+  <h2><span class="lang-ja">1. 取り扱う情報</span><span class="lang-en">1. Information the App handles</span></h2>
+  <ul>
+    <li>
+      <span class="lang-ja"><strong>写真と、その撮影日時・撮影場所</strong>：旅行を見つけてカレンダーに並べるため、写真ライブラリから撮影日時と撮影場所（位置情報）を読み取ります。都道府県・国の判定は、アプリに同梱した地図データを使って<strong>端末内でオフラインで</strong>行います。画像は表示や端末内の解析のためにその場で読み込むだけで、アプリ内に保存せず、外部にも送信しません。</span>
+      <span class="lang-en"><strong>Photos, and when and where they were taken</strong>: to find your trips, the App reads the capture date and location of photos in your library. Prefectures and countries are identified <strong>offline, on your device</strong>, using map data bundled with the App. Images are loaded only on the spot for display and on-device analysis; they are never saved inside the App or sent anywhere.</span>
+    </li>
+    <li>
+      <span class="lang-ja"><strong>地名・タイムゾーンの問い合わせ</strong>：市区町村名（例：あきる野市）と、海外旅行の現地のタイムゾーンを表示するため、旅行ごとに代表となる1地点の座標を、Appleの地図サービス（MapKit／Core Location）に問い合わせます。「帯にしない場所」を地図で編集するときも、地図の中心の地名を問い合わせます。送信されるのは座標のみで、写真は送信されません。結果の地名とタイムゾーン名は端末内に保存されます。この処理にはAppleの<a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>が適用されます。</span>
+      <span class="lang-en"><strong>Place-name and time-zone lookups</strong>: to show city names and the local time zone of trips abroad, the App sends one representative coordinate per trip to Apple's map service (MapKit / Core Location). When you edit a place on the map, the map center is looked up the same way. Only coordinates are sent — never photos. The resulting place and time-zone names are kept on your device. Apple's <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Privacy Policy</a> applies to these lookups.</span>
+    </li>
+    <li>
+      <span class="lang-ja"><strong>現在地</strong>：「帯にしない場所」の地図を現在地に合わせるときだけ、許可を得て現在地を取得します。現在地そのものは保存せず、ユーザーが保存した場所（中心と半径）だけを保存します。</span>
+      <span class="lang-en"><strong>Current location</strong>: only when you center the map on your position while setting up a place, and only with your permission. Your current location itself is not stored — only the place (center and radius) you choose to save.</span>
+    </li>
+    <li>
+      <span class="lang-ja"><strong>コメント・帯にしない場所・設定</strong>：端末内に保存し、ユーザー自身のiCloud（CloudKitのプライベートデータベース）を通じて、同じApple Accountの端末間で同期します。このデータは開発者を含む第三者からは見られません。</span>
+      <span class="lang-en"><strong>Notes, saved places and settings</strong>: stored on your device and synced between your devices through your own iCloud (CloudKit private database). Nobody else, including the Developer, can access this data.</span>
+    </li>
+    <li>
+      <span class="lang-ja"><strong>端末の傾き</strong>：写真の帯を立体的に見せるため、表示中だけモーションセンサーで端末の傾きを読み取ります。保存・送信はしません。</span>
+      <span class="lang-en"><strong>Device tilt</strong>: while the photo banner is on screen, the motion sensor is read to add a subtle 3D effect. This is neither stored nor sent.</span>
+    </li>
+  </ul>
+
+  <h2><span class="lang-ja">2. 端末内での画像解析（顔認識は行いません）</span><span class="lang-en">2. On-device image analysis (no face recognition)</span></h2>
+  <p>
+    <span class="lang-ja">本アプリは、AppleのVisionフレームワークを用いて端末内で、写真が風景かどうかの大まかな分類、目を引く位置の推定、写っている人や物の輪郭の切り抜きを行います（写真の帯の表示に使用）。本アプリは顔認識・個人識別を<strong>行わず</strong>、顔の特徴量やその他の生体情報を作成・収集しません。解析結果はメモリ上で一時的に使用されるのみで、保存されずに破棄されます。</span>
+    <span class="lang-en">The App uses Apple's Vision framework on your device to roughly classify whether a photo is scenery, estimate the eye-catching area, and cut out the outline of people or objects (for the photo banner). The App does <strong>not</strong> perform face recognition or identification and does not create or collect faceprints or any other biometric data. Results exist only transiently in memory and are discarded without being stored.</span>
+  </p>
+
+  <h2><span class="lang-ja">3. 第三者への提供</span><span class="lang-en">3. Third parties</span></h2>
+  <p>
+    <span class="lang-ja">開発者は、法令に基づく場合を除き、ユーザーの情報を販売・共有しません。本アプリは広告や利用状況解析のSDKを組み込んでいません。利用する外部サービスは、上記のAppleの地図サービスとiCloudのみです。</span>
+    <span class="lang-en">The Developer does not sell or share your information, except as required by law. The App contains no advertising or analytics SDKs. The only outside services it uses are Apple's map service and iCloud, as described above.</span>
+  </p>
+
+  <h2><span class="lang-ja">4. データの削除</span><span class="lang-en">4. Deleting your data</span></h2>
+  <p>
+    <span class="lang-ja">本アプリを削除すると、端末内のデータは削除されます。iCloudに同期されたデータは、iPhoneの「設定」→ ユーザー名 →「iCloud」→「ストレージを管理」から削除できます。写真ライブラリの写真は、本アプリの削除によって変更・削除されることはありません。</span>
+    <span class="lang-en">Deleting the App removes its data from your device. Data synced to iCloud can be removed in Settings → your name → iCloud → Manage Storage. Your photo library is never modified or deleted by the App.</span>
+  </p>
+
+  <h2><span class="lang-ja">5. お子様のプライバシー</span><span class="lang-en">5. Children's privacy</span></h2>
+  <p>
+    <span class="lang-ja">本アプリは13歳未満のお子様を対象としておらず、13歳未満の方の個人情報を意図的に収集することはありません。</span>
+    <span class="lang-en">The App is not directed to children under 13, and we do not knowingly collect personal information from children under 13.</span>
+  </p>
+
+  <h2><span class="lang-ja">6. ポリシーの変更</span><span class="lang-en">6. Changes to this policy</span></h2>
+  <p>
+    <span class="lang-ja">本ポリシーは必要に応じて更新することがあります。重要な変更がある場合はアプリのアップデート時にお知らせします。</span>
+    <span class="lang-en">We may update this policy from time to time. Significant changes will be noted with app updates.</span>
+  </p>
+
+  <h2><span class="lang-ja">7. お問い合わせ</span><span class="lang-en">7. Contact</span></h2>
+  <p>
+    <span class="lang-ja">プライバシーに関するご質問は、下記までお問い合わせください。</span>
+    <span class="lang-en">For privacy questions, contact us:</span>
+    <br /><a href="mailto:hideto0926@gmail.com">hideto0926@gmail.com</a> ·
+    <a href="https://hideto0926.github.io/" target="_blank" rel="noopener">https://hideto0926.github.io/</a>
+  </p>
+</div>
+</div>
+<script>
+function setLang(l){
+  document.body.classList.toggle('ja', l==='ja');
+  document.documentElement.lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-ja').classList.toggle('active', l==='ja');
+  try{ localStorage.setItem('ad_lang', l); }catch(e){}
+}
+(function(){
+  var saved=null; try{ saved=localStorage.getItem('ad_lang'); }catch(e){}
+  var l = saved || ((navigator.language||'ja').toLowerCase().startsWith('ja') ? 'ja' : 'en');
+  setLang(l);
+})();
+</script>
+</body>
+</html>

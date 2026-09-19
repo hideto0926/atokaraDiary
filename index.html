@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>あとから旅日記 — Atokara Travel Diary</title>
+<meta name="description" content="日記はめんどい。写真の撮影日と場所から、旅行を自動でカレンダーに並べるiPhoneアプリ。Your trips, laid out on a calendar automatically from your photos — no diary writing needed." />
+<meta property="og:title" content="あとから旅日記 — Atokara Travel Diary" />
+<meta property="og:description" content="写真から旅行を自動でカレンダーに。書かなくていい、旅の振り返り日記。" />
+<meta property="og:image" content="assets/icon.png" />
+<link rel="icon" href="assets/icon.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ground:#F5F1EA; --card:#FFFFFF; --ink:#1E1B17; --secondary:#5E574D; --muted:#8E8578;
+    --hairline:#E2DBCF; --segment:#E6DFD3; --accent:#1F4E5F; --sky:#70C5E9; --sky-ink:#17384A;
+    --band1:#A84E2B; --band2:#2F6A78; --band3:#5B4A8A; --band4:#4F6B3A;
+    --mincho:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+    --gothic:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--gothic);line-height:1.8;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  a:hover{color:#163A47}
+  img{max-width:100%;height:auto;display:block}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .lang-ja{display:none}
+  body.ja .lang-en{display:none}
+  body.ja .lang-ja{display:initial}
+
+  /* ナビ */
+  nav{position:sticky;top:0;z-index:10;background:rgba(245,241,234,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--hairline)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--mincho);font-weight:700;font-size:18px}
+  .brand img{width:34px;height:34px;border-radius:9px}
+  .spacer{flex:1}
+  nav .link{text-decoration:none;color:var(--secondary);font-size:14px;font-weight:500}
+  .langtoggle{display:flex;background:var(--segment);border-radius:10px;padding:3px}
+  .langtoggle button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:700;color:var(--secondary);padding:5px 11px;border-radius:8px;cursor:pointer;min-height:32px}
+  .langtoggle button.active{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(30,27,23,.12)}
+
+  /* ヒーロー（アイコン・起動画面と同じ空色） */
+  .hero{background:var(--sky);color:var(--sky-ink);position:relative;overflow:hidden}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-top:64px;padding-bottom:64px;position:relative;z-index:1}
+  .hero .trail{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .hero h1{font-family:var(--mincho);font-size:clamp(34px,5.4vw,58px);line-height:1.3;margin:0 0 18px;letter-spacing:.01em}
+  .hero .lead{font-size:17px;max-width:30em;margin:0 0 28px}
+  .hero .appicon{width:84px;height:84px;border-radius:20px;box-shadow:0 10px 26px rgba(23,56,74,.25);margin-bottom:22px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .store{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;text-decoration:none;padding:10px 20px;border-radius:14px;min-height:52px}
+  .store:hover{color:#fff;background:#000}
+  .store small{display:block;font-size:11px;opacity:.8;line-height:1.2}
+  .store b{display:block;font-size:17px;line-height:1.2}
+  .ghost{color:var(--sky-ink);font-weight:700;text-decoration:none;padding:12px 8px}
+  .ghost:hover{color:#0d2330}
+  .note{font-size:13px;margin-top:18px;opacity:.85}
+  .phone{justify-self:center;width:min(300px,78vw);border-radius:40px;padding:10px;background:#fff;box-shadow:0 24px 60px rgba(23,56,74,.3)}
+  .phone img{border-radius:31px}
+
+  /* 3つの約束 */
+  .points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:-34px;position:relative;z-index:2}
+  .point{background:var(--card);border-radius:18px;padding:22px 22px 20px;box-shadow:0 8px 24px rgba(30,27,23,.08)}
+  .point h3{font-family:var(--mincho);font-size:19px;margin:0 0 6px}
+  .point p{margin:0;font-size:14px;color:var(--secondary)}
+  .chip{display:inline-block;color:#fff;font-size:12px;font-weight:700;padding:1px 10px;border-radius:8px;margin-bottom:10px}
+
+  /* 特長 */
+  section{padding:80px 0}
+  .section-title{font-family:var(--mincho);font-size:clamp(26px,3.6vw,36px);margin:0 0 8px}
+  .section-lead{color:var(--secondary);margin:0 0 40px;max-width:40em}
+  .feature{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:center;padding:36px 0;border-top:1px solid var(--hairline)}
+  .feature:nth-of-type(even) .shot{order:2}
+  .shot{justify-self:center;width:min(270px,70vw);border-radius:34px;padding:8px;background:var(--card);box-shadow:0 14px 40px rgba(30,27,23,.12)}
+  .shot img{border-radius:27px}
+  .feature h2{font-family:var(--mincho);font-size:clamp(22px,2.8vw,28px);line-height:1.45;margin:6px 0 12px}
+  .feature p{color:var(--secondary);margin:0 0 14px}
+  .feature ul{margin:0;padding-left:1.2em;color:var(--ink);font-size:15px}
+  .feature li{margin:4px 0}
+  .tag{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.06em}
+
+  /* プライバシー */
+  .privacy{background:var(--card)}
+  .privacy .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .privacy .item{border:1px solid var(--hairline);border-radius:16px;padding:20px}
+  .privacy .item h3{font-size:16px;margin:0 0 6px}
+  .privacy .item p{font-size:14px;color:var(--secondary);margin:0}
+
+  /* よくある質問 */
+  details{background:var(--card);border-radius:14px;padding:4px 20px;margin-bottom:10px;border:1px solid var(--hairline)}
+  summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none;display:flex;gap:10px;align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"Q";font-family:var(--mincho);color:var(--accent);font-size:18px}
+  details p{margin:0 0 16px;color:var(--secondary)}
+
+  .contact{text-align:center}
+  .contact p{color:var(--secondary)}
+  footer{border-top:1px solid var(--hairline);padding:28px 0 40px;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+  footer a{color:var(--secondary);text-decoration:none}
+
+  @media (max-width:820px){
+    .hero .wrap{grid-template-columns:minmax(0,1fr);padding-top:44px;padding-bottom:72px}
+    .points,.privacy .grid{grid-template-columns:minmax(0,1fr)}
+    .feature{grid-template-columns:minmax(0,1fr);gap:24px}
+    .feature:nth-of-type(even) .shot{order:0}
+    nav .link{display:none}
+    section{padding:56px 0}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .plane{animation:fly 9s ease-in-out infinite}
+    @keyframes fly{0%,100%{transform:translate(0,0) rotate(-12deg)}50%{transform:translate(-14px,8px) rotate(-8deg)}}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/icon.png" alt="" /><span class="lang-ja">あとから旅日記</span><span class="lang-en">Atokara Travel Diary</span></a>
+    <div class="spacer"></div>
+    <a class="link" href="#features"><span class="lang-en">Features</span><span class="lang-ja">特長</span></a>
+    <a class="link" href="#faq"><span class="lang-en">FAQ</span><span class="lang-ja">よくある質問</span></a>
+    <a class="link" href="privacy.html"><span class="lang-en">Privacy</span><span class="lang-ja">プライバシー</span></a>
+    <div class="langtoggle" role="group" aria-label="Language">
+      <button id="btn-en" type="button" onclick="setLang('en')">EN</button>
+      <button id="btn-ja" type="button" onclick="setLang('ja')">日本語</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="trail" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-40 520 C 60 250, 520 60, 1240 120" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 14" vector-effect="non-scaling-stroke" />
+  </svg>
+  <div class="wrap">
+    <div>
+      <img class="appicon" src="assets/icon.png" alt="" />
+      <h1>
+        <span class="lang-ja">日記は、<br />あとから。</span>
+        <span class="lang-en">Your trips,<br />remembered later.</span>
+      </h1>
+      <p class="lead">
+        <span class="lang-ja">日記はめんどい。だから書かなくていい旅日記です。写真の撮影日と撮影場所から、いつ・どこへ旅行したかを自動でカレンダーに並べます。残したい日だけ、一言コメントを。</span>
+        <span class="lang-en">Keeping a diary is a chore — so this one writes itself. Atokara Travel Diary reads when and where your photos were taken and lays your trips out on a calendar automatically. Add a short note only on the days you want to.</span>
+      </p>
+      <div class="cta">
+        <a class="store" href="#" aria-label="App Store">
+          <svg width="22" height="26" viewBox="0 0 22 26" aria-hidden="true"><path fill="#fff" d="M18.2 13.8c0-3 2.5-4.5 2.6-4.6-1.4-2.1-3.6-2.4-4.4-2.4-1.9-.2-3.7 1.1-4.6 1.1-1 0-2.4-1.1-4-1-2 0-3.9 1.2-5 3-2.1 3.7-.5 9.2 1.5 12.2 1 1.5 2.2 3.1 3.8 3 1.5-.1 2.1-1 3.9-1s2.4 1 4 1c1.7 0 2.7-1.5 3.7-3 1.2-1.7 1.6-3.3 1.7-3.4-.1 0-3.2-1.2-3.2-4.9zM15.2 4.9c.8-1 1.4-2.4 1.2-3.8-1.2.1-2.6.8-3.5 1.8-.8.9-1.4 2.3-1.3 3.7 1.4.1 2.7-.7 3.6-1.7z"/></svg>
+          <span><small class="lang-en">Coming soon on the</small><small class="lang-ja">近日公開</small><b>App Store</b></span>
+        </a>
+        <a class="ghost" href="#features"><span class="lang-en">See features ↓</span><span class="lang-ja">特長を見る ↓</span></a>
+      </div>
+      <p class="note">
+        <span class="lang-ja">iPhone 用 · 写真はこのアプリに保存されず、外部にも送られません</span>
+        <span class="lang-en">For iPhone · Your photos are never copied into the app or uploaded</span>
+      </p>
+    </div>
+    <div class="phone"><img src="assets/shots/calendar.jpg" alt="カレンダー画面 / Calendar screen" width="600" height="1304" /></div>
+  </div>
+  <svg class="plane" style="position:absolute;right:6%;top:36px;z-index:1" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg>
+</header>
+
+<div class="wrap">
+  <div class="points">
+    <div class="point">
+      <span class="chip" style="background:var(--band1)"><span class="lang-ja">書かなくていい</span><span class="lang-en">No writing</span></span>
+      <h3><span class="lang-ja">開くだけで、旅が並ぶ</span><span class="lang-en">Just open it</span></h3>
+      <p><span class="lang-ja">自宅を登録するだけ。あとは写真から旅行を見つけて、カレンダーに帯で表示します。</span><span class="lang-en">Register your home once. Trips are found from your photos and shown as bands on the calendar.</span></p>
+    </div>
+    <div class="point">
+      <span class="chip" style="background:var(--band2)"><span class="lang-ja">旅が帯になる</span><span class="lang-en">Trips as bands</span></span>
+      <h3><span class="lang-ja">国内は都道府県、海外は国</span><span class="lang-en">By prefecture or country</span></h3>
+      <p><span class="lang-ja">「京都府」「アメリカ合衆国」のように、行き先ごとに色の帯でまとめます。</span><span class="lang-en">Each trip becomes a colored band — by prefecture or state at home, by country abroad.</span></p>
+    </div>
+    <div class="point">
+      <span class="chip" style="background:var(--band3)"><span class="lang-ja">写真は保存しない</span><span class="lang-en">Photos stay put</span></span>
+      <h3><span class="lang-ja">参照して、見せるだけ</span><span class="lang-en">View-only access</span></h3>
+      <p><span class="lang-ja">写真ライブラリを参照して表示するだけ。画像をアプリにコピーしたり、外に送ったりしません。</span><span class="lang-en">The app only reads your library to show it. Images are never copied into the app or sent anywhere.</span></p>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2 class="section-title"><span class="lang-ja">できること</span><span class="lang-en">Features</span></h2>
+    <p class="section-lead"><span class="lang-ja">カレンダーを中心に、あとから旅を振り返るための機能をそろえました。</span><span class="lang-en">Built around a calendar, for looking back on your travels.</span></p>
+
+    <div class="feature">
+      <div class="shot"><img src="assets/shots/calendar.jpg" alt="" loading="lazy" width="600" height="1304" /></div>
+      <div>
+        <span class="tag"><span class="lang-ja">カレンダー</span><span class="lang-en">CALENDAR</span></span>
+        <h2><span class="lang-ja">旅行の日に、行き先の帯</span><span class="lang-en">Every trip, drawn as a band</span></h2>
+        <p><span class="lang-ja">写真のある日にはサムネイルが並び、数秒ごとにふわっと切り替わります。旅行の日には行き先の帯。月の上には、その月の旅の写真がゆっくり流れます。</span><span class="lang-en">Days with photos show thumbnails that gently change every few seconds. Trip days get a band with the destination, and each month is topped with a slowly drifting photo from that month's trips.</span></p>
+        <ul>
+          <li><span class="lang-ja">横にめくる／縦にスクロール、好きな方で</span><span class="lang-en">Swipe month by month, or scroll vertically</span></li>
+          <li><span class="lang-ja">写真に写った人や物が、帯から少し飛び出して見える</span><span class="lang-en">People and objects in the photo gently pop out of the banner</span></li>
+          <li><span class="lang-ja">海外の写真は現地の日付で並べる</span><span class="lang-en">Photos abroad are placed on the local date</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="shot"><img src="assets/shots/list.jpg" alt="" loading="lazy" width="600" height="1304" /></div>
+      <div>
+        <span class="tag"><span class="lang-ja">一覧</span><span class="lang-en">YOUR TRIPS</span></span>
+        <h2><span class="lang-ja">これまでの旅が、ひと目で</span><span class="lang-en">All your trips at a glance</span></h2>
+        <p><span class="lang-ja">年ごとに旅を並べ、旅行の回数・行った都道府県の数・国の数を数えます。近場の日帰りなら「東京都 あきる野市」のように市区町村まで表示します。</span><span class="lang-en">Trips are grouped by year, with counts of trips, prefectures and countries. Day trips near home even show the city name.</span></p>
+        <ul>
+          <li><span class="lang-ja">国内／海外で絞り込み</span><span class="lang-en">Filter domestic or abroad</span></li>
+          <li><span class="lang-ja">タップでその月のカレンダーへ</span><span class="lang-en">Tap to jump to that month</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="shot"><img src="assets/shots/area.jpg" alt="" loading="lazy" width="600" height="1304" /></div>
+      <div>
+        <span class="tag"><span class="lang-ja">帯にしない場所</span><span class="lang-en">HOME &amp; EVERYDAY PLACES</span></span>
+        <h2><span class="lang-ja">自宅や会社のまわりは、旅にしない</span><span class="lang-en">Home and work don't count as trips</span></h2>
+        <p><span class="lang-ja">地図で中心と半径を決めるか、都道府県まるごとを選ぶだけ。いくつでも登録できます。そこで撮った写真はカレンダーに出さず、旅行にもしません。</span><span class="lang-en">Set a spot on the map with a radius, or pick a whole prefecture — as many as you like. Photos taken there are left off the calendar and never become a trip.</span></p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="shot"><img src="assets/shots/day.jpg" alt="" loading="lazy" width="600" height="1304" /></div>
+      <div>
+        <span class="tag"><span class="lang-ja">コメント</span><span class="lang-en">NOTES</span></span>
+        <h2><span class="lang-ja">残したい日だけ、一言</span><span class="lang-en">A line, only when you feel like it</span></h2>
+        <p><span class="lang-ja">日付をタップすると、その日の写真とコメント欄が開きます。コメントは iCloud で、同じ Apple Account の iPhone どうしに同期されます。</span><span class="lang-en">Tap a date to see that day's photos and jot a note. Notes sync between your iPhones through your own iCloud.</span></p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="shot"><img src="assets/shots/viewer.jpg" alt="" loading="lazy" width="600" height="1304" /></div>
+      <div>
+        <span class="tag"><span class="lang-ja">ビューア</span><span class="lang-en">VIEWER</span></span>
+        <h2><span class="lang-ja">サムネイルから、そのまま写真へ</span><span class="lang-en">From thumbnail to full photo</span></h2>
+        <p><span class="lang-ja">左右にスワイプしてその日の写真を送り、ピンチで拡大、動画も再生できます。写真はその場で読んで表示するだけです。</span><span class="lang-en">Swipe through the day's photos, pinch to zoom, and play videos. Photos are loaded on the spot, just for viewing.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="privacy">
+  <div class="wrap">
+    <h2 class="section-title"><span class="lang-ja">写真は、あなたの iPhone の中だけ</span><span class="lang-en">Your photos stay on your iPhone</span></h2>
+    <p class="section-lead"><span class="lang-ja">旅行の判定も、写真の演出も、すべて端末の中で行います。</span><span class="lang-en">Trip detection and photo effects all run on the device.</span></p>
+    <div class="grid">
+      <div class="item">
+        <h3><span class="lang-ja">保存しない・送らない</span><span class="lang-en">Never copied or uploaded</span></h3>
+        <p><span class="lang-ja">写真ライブラリを参照するだけ。画像をアプリに保存したり、サーバーへ送ったりしません。</span><span class="lang-en">The app reads your library for display only — no copies, no uploads.</span></p>
+      </div>
+      <div class="item">
+        <h3><span class="lang-ja">地図データを内蔵</span><span class="lang-en">Built-in map data</span></h3>
+        <p><span class="lang-ja">都道府県・国の判定は、アプリに入った地図データでオフラインで行います。</span><span class="lang-en">Prefectures and countries are identified offline with map data bundled in the app.</span></p>
+      </div>
+      <div class="item">
+        <h3><span class="lang-ja">広告・解析なし</span><span class="lang-en">No ads, no tracking</span></h3>
+        <p><span class="lang-ja">広告や利用状況の解析の仕組みは入っていません。</span><span class="lang-en">No advertising or analytics SDKs.</span></p>
+      </div>
+    </div>
+    <p style="margin-top:22px"><a href="privacy.html"><span class="lang-ja">プライバシーポリシーを読む →</span><span class="lang-en">Read the privacy policy →</span></a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap" style="max-width:820px">
+    <h2 class="section-title"><span class="lang-ja">よくある質問</span><span class="lang-en">FAQ</span></h2>
+    <p class="section-lead"><span class="lang-ja">困ったときはこちらをご覧ください。</span><span class="lang-en">If something isn't working as expected, start here.</span></p>
+
+    <details>
+      <summary><span class="lang-ja">旅行がカレンダーに出てきません</span><span class="lang-en">My trips don't show up</span></summary>
+      <p><span class="lang-ja">旅行は、写真に記録された撮影場所から判定します。カメラの位置情報がオフのときに撮った写真では判定できません。また「設定」で写真へのアクセスが「選択した写真のみ」になっていると、選んだ写真だけで判定します。「すべての写真」にすると自動で見つかります。</span><span class="lang-en">Trips are detected from the location saved in each photo, so photos taken with Location Services off can't be used. If photo access is set to "Selected Photos", only those photos are checked — allow "All Photos" to find trips automatically.</span></p>
+    </details>
+    <details>
+      <summary><span class="lang-ja">表示されない写真があります</span><span class="lang-en">Some of my photos aren't shown</span></summary>
+      <p><span class="lang-ja">撮影場所（位置情報）が記録されていない写真は表示しません。Web や SNS から保存した画像、位置情報をオフにして撮った写真などが当てはまります。スクリーンショットと画面収録も表示しません。旅の記録に関係する写真だけを並べるためです。</span><span class="lang-en">Photos without a saved location aren't shown — for example images saved from the web or social media, or photos taken with Location Services off. Screenshots and screen recordings are hidden too, so only your travel photos appear.</span></p>
+    </details>
+    <details>
+      <summary><span class="lang-ja">近所で撮った写真まで旅行になってしまいます</span><span class="lang-en">Photos from my neighborhood appear as trips</span></summary>
+      <p><span class="lang-ja">「設定」→「帯にしない場所」に、自宅や会社、よく行く場所を登録してください。地図の範囲でも、都道府県まるごとでも指定できます。</span><span class="lang-en">Add your home, workplace or other everyday places under Settings → Home &amp; everyday places, either as an area on the map or as a whole prefecture.</span></p>
+    </details>
+    <details>
+      <summary><span class="lang-ja">サムネイルを押すと、写真アプリではなくこのアプリで開くのはなぜ？</span><span class="lang-en">Why do photos open in this app, not in Photos?</span></summary>
+      <p><span class="lang-ja">iOS には、特定の写真や日付を指定して写真アプリを開く仕組みが用意されていません。そのため、このアプリの中で写真を表示しています（写真を保存することはありません）。</span><span class="lang-en">iOS doesn't let apps open the Photos app at a specific photo or date, so photos are shown inside this app instead — still without saving them.</span></p>
+    </details>
+    <details>
+      <summary><span class="lang-ja">海外の旅行を州ごとに分けたい</span><span class="lang-en">Can I split trips abroad by state?</span></summary>
+      <p><span class="lang-ja">「設定」→「海外のまとめ方」で「州・県ごとに分ける」をオンにすると、「アメリカ合衆国」ではなく「ハワイ州」のように表示します。</span><span class="lang-en">Yes — turn on "Split by state/province" in Settings, and a trip will show as "Hawaii" instead of "United States".</span></p>
+    </details>
+    <details>
+      <summary><span class="lang-ja">コメントが別の iPhone に出てきません</span><span class="lang-en">Notes don't appear on my other iPhone</span></summary>
+      <p><span class="lang-ja">両方の iPhone で同じ Apple Account の iCloud にサインインしているか確認してください。同期には少し時間がかかることがあります。</span><span class="lang-en">Make sure both iPhones are signed in to iCloud with the same Apple Account. Syncing can take a little while.</span></p>
+    </details>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2 class="section-title"><span class="lang-ja">お問い合わせ</span><span class="lang-en">Contact</span></h2>
+    <p><span class="lang-ja">ご意見・不具合のご報告は、こちらまでお気軽にどうぞ。</span><span class="lang-en">Questions, feedback or bug reports are welcome.</span></p>
+    <p><a href="mailto:hideto0926@gmail.com">hideto0926@gmail.com</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Hideto Akiyoshi</span>
+    <div class="spacer"></div>
+    <a href="privacy.html"><span class="lang-ja">プライバシーポリシー</span><span class="lang-en">Privacy Policy</span></a>
+    <a href="https://hideto0926.github.io/" target="_blank" rel="noopener"><span class="lang-ja">開発者のページ</span><span class="lang-en">Developer</span></a>
+  </div>
+</footer>
+
+<script>
+function setLang(l){
+  document.body.classList.toggle('ja', l==='ja');
+  document.documentElement.lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-ja').classList.toggle('active', l==='ja');
+  try{ localStorage.setItem('ad_lang', l); }catch(e){}
+}
+(function(){
+  var saved=null; try{ saved=localStorage.getItem('ad_lang'); }catch(e){}
+  var l = saved || ((navigator.language||'ja').toLowerCase().startsWith('ja') ? 'ja' : 'en');
+  setLang(l);
+})();
+</script>
+</body>
+</html>
